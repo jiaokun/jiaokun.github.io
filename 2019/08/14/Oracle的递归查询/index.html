@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>Oracle的递归查询 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Oracle的递归查询</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">八月 14, 2019&nbsp;&nbsp;19:22:45</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><pre><code>SELECT * from table_name start with 条件2 connect by 条件3 [where 条件1];</code></pre><p>条件1是对结果集的再筛选。</p>
+<p>条件2确定起始节点，可以确定多个起始节点，可以理解成查询出来的结果树的叶子节点或者根节点。</p>
+<p>条件3是连接条件，通过关键字prior指定上一条记录。</p>
+<h1 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h1><p>我们称表中的数据存在父子关系，通过列与列来关联的，这样的数据结构为树结构。 现在有一个menu表，字段有id，pid，title三个。 <img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/08/20190814191828.png" alt=""></p>
+<ul>
+<li><p>查询菜单id为10的所有子菜单。</p>
+<pre><code>SELECT * FROM tb_menu m START WITH m.id=10 CONNECT BY m.pid=PRIOR m.id;</code></pre><p><img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/08/20190814191904.png" alt=""> 将<code>PRIOR</code>关键字放在<code>m.id</code>前面，意思就是查询pid是当前记录id的记录，如此顺延找到所有子节点。</p>
+</li>
+<li><p>查询菜单id为40的所有父菜单。</p>
+<pre><code>SELECT * FROM tb_menu m START WITH m.id=40 CONNECT BY PRIOR m.pid= m.id ORDER BY ID;</code></pre><p><img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/08/20190814191938.png" alt=""> <strong>LEVEL关键字</strong></p>
+</li>
+<li><p>查询一个节点的父节点的的兄弟节点（伯父与叔父） 因为创建的表没有LEVEL的字段，可以</p>
+<pre><code>WITH TMP AS
+(SELECT M.*, LEVEL LEV
+FROM MENU M
+START WITH M.PID = 0
+CONNECT BY PRIOR M.ID = M.PID)
+SELECT * FROM TMP;</code></pre><p><img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/08/20190814192153.png" alt=""> tmp的效果就是上面这样，LEV就是菜单所在的深度或者层级。</p>
+<pre><code>WITH TMP AS
+(SELECT M.*, LEVEL LEV
+FROM MENU M
+START WITH M.PID = 0
+CONNECT BY PRIOR M.ID = M.PID)
+SELECT *
+FROM TMP
+WHERE PID =
+   (SELECT PID FROM TMP WHERE ID = (SELECT PID FROM TMP WHERE ID = 21));</code></pre><p>注意查询的不是id=20的父亲的同等级的菜单而是父亲的兄弟菜单，也就是跟父菜单具有相同pid的节点。</p>
+<h1 id="EXISTS和NOT-EXISTS"><a href="#EXISTS和NOT-EXISTS" class="headerlink" title="EXISTS和NOT EXISTS"></a>EXISTS和NOT EXISTS</h1><pre><code>SELECT COUNT(*)
+FROM TB_MENU M1
+WHERE EXISTS (SELECT *
+      FROM TB_MENU M2
+     WHERE ID = -1
+       AND M1.ID = M2.ID)
+AND M1.ID = 2;</code></pre><p>以这个查询语句为例，如果EXISTS或者NOT EXISTS后面的查询条件没有 m1.id=m2.id，其实后面的查询结果就相当于true或者false这两个值，为true，无需考虑；为false，结果为0； 加上m1.id=m2.id这一关联后，就在查询结果集里再进行一次筛选。</p>
+</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/08/14/Oracle%E7%9A%84%E9%80%92%E5%BD%92%E6%9F%A5%E8%AF%A2/">https://jiaokun.github.io/2019/08/14/Oracle%E7%9A%84%E9%80%92%E5%BD%92%E6%9F%A5%E8%AF%A2/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Oracle/"># Oracle</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/10/24/Volatile%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">Volatile实现原理</a>
+            
+            
+            <a class="next" rel="next" href="/2019/08/14/Oracle%20%E7%9A%84%20ROW_NUMBER()%20OVER()%E5%87%BD%E6%95%B0/">Oracle 的 ROW_NUMBER() OVER()函数</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

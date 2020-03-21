@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>二分搜索树 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">二分搜索树</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">三月 11, 2019&nbsp;&nbsp;23:51:27</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>二分搜索树是二叉树 二分搜索树的每个节点的值-&gt; 大于其左子树的每个节点的值，小于其右子树的每个节点的值。因此二分搜索树不包含重复节点。 存储的元素具有可比较性。</p>
+<h1 id="创建一个二分搜索树类"><a href="#创建一个二分搜索树类" class="headerlink" title="创建一个二分搜索树类"></a>创建一个二分搜索树类</h1><pre><code>public class BST&lt;E extends Comparable&lt;E&gt;&gt;  {
+    private class Node{
+        public E e;
+        public Node left;
+        public Node right;
+        public Node(E e){
+            this.e=e;
+            this.left=null;
+            this.right=null;
+        }
+    }
+
+    private Node root;
+    private int size;
+
+    public BST(){
+        this.root=null;
+    }
+
+    public int size(){
+        return size;
+    }
+
+    public boolean isEmpty(){
+        return size==0;
+    }
+}</code></pre><h1 id="添加元素"><a href="#添加元素" class="headerlink" title="添加元素"></a>添加元素</h1><pre><code>public void add(E e){
+    root=add(root,e);
+}
+
+private Node add(Node node,E e){
+    if(node==null){
+        node=new Node(e);
+        size++;
+        return node;
+    }else if(e.compareTo(node.e)&lt;0){
+        node.left=add(node.left,e);
+    }else if(e.compareTo(node.e)&gt;0){
+        node.right=add(node.right,e);
+    }
+
+    return node;
+}</code></pre><h1 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h1><pre><code>public boolean contains(E e){
+    return contains(root,e);
+}
+
+private boolean contains(Node node,E e){
+    if(node==null){
+        return false;
+    }
+
+    if(e.compareTo(node.e)==0){
+        return true;
+    }else if(e.compareTo(node.e)&lt;0){
+        return contains(node.left,e);
+    }else //if(e.compareTo(node.e)&gt;0){
+  return contains(node.right,e);
+}</code></pre><h1 id="先序遍历"><a href="#先序遍历" class="headerlink" title="先序遍历"></a>先序遍历</h1><pre><code>public void preOrder(){
+    preOrder(root);
+}
+
+private void preOrder(Node node){
+    if(node==null){
+        return ;
+    }
+    System.out.println(node.e);
+    preOrder(node.left);
+    preOrder(node.right);
+}</code></pre><h1 id="中序遍历"><a href="#中序遍历" class="headerlink" title="中序遍历"></a>中序遍历</h1><pre><code>public void inOrder(){
+    inOrder(root);
+}
+
+private void inOrder(Node node){
+    if(node==null){
+        return ;
+    }
+    inOrder(node.left);
+    System.out.println(node.e);
+    inOrder(node.right);
+}</code></pre><p>中序遍历也被称为排序遍历，其遍历的结果是按从小到大顺序访问节点。</p>
+<h1 id="后序遍历"><a href="#后序遍历" class="headerlink" title="后序遍历"></a>后序遍历</h1><pre><code>public void postOrder(){
+    postOrder(root);
+}
+
+private void postOrder(Node node){
+    if(node==null){
+        return ;
+    }
+    postOrder(node.left);
+    postOrder(node.right);
+    System.out.println(node.e);
+}</code></pre><p>先遍历左子树，再遍历右子树，可以联系到内存释放。</p>
+<h1 id="先序遍历的非递归实现"><a href="#先序遍历的非递归实现" class="headerlink" title="先序遍历的非递归实现"></a>先序遍历的非递归实现</h1><pre><code>public void preOrder(){
+    Stack &lt;Node&gt; stack= new Stack&lt;&gt;();
+    stack.push(root);
+    while(!stack.isEmpty()){
+        Node cur=stack.pop();
+        System.out.println(cur.e);
+        if(cur.right!=null)
+            stack.push(cur.right);
+        if(cur.left!=null)
+            stack.push(cur.left);
+    }
+}</code></pre><h1 id="层序遍历"><a href="#层序遍历" class="headerlink" title="层序遍历"></a>层序遍历</h1><pre><code>public void levelOrder(){
+    Queue&lt;Node&gt; queue=new LinkedList&lt;&gt;();
+    queue.add(root);
+    while(!queue.isEmpty()){
+        Node cur= queue.remove();
+        System.out.println(cur.e);
+        if(cur.left!=null)
+            queue.add(cur.left);
+        if(cur.right!=null)
+            queue.add(cur.right);
+    }
+}</code></pre>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/03/11/%E4%BA%8C%E5%88%86%E6%90%9C%E7%B4%A2%E6%A0%91/">https://jiaokun.github.io/2019/03/11/%E4%BA%8C%E5%88%86%E6%90%9C%E7%B4%A2%E6%A0%91/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E4%BA%8C%E5%88%86%E6%90%9C%E7%B4%A2%E6%A0%91/"># 二分搜索树</a>
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"># 数据结构</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/03/13/%E4%BA%8C%E5%88%86%E6%90%9C%E7%B4%A2%E6%A0%91%E5%88%A0%E9%99%A4%E6%9C%80%E5%B0%8F%E5%80%BC/">二分搜索树删除最小值</a>
+            
+            
+            <a class="next" rel="next" href="/2019/03/06/XML%E7%9A%84%E8%AF%BB%E5%8F%96%E5%92%8C%E4%BF%9D%E5%AD%98/">XML的读取和保存</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

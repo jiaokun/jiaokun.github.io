@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>链表 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">链表</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">三月 3, 2019&nbsp;&nbsp;23:52:58</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>数据存储在节点中，与数组相比，是真正的动态，不需要考虑固定容量的问题；但是也因此使其不能随机访问。</p>
+<h1 id="链表类"><a href="#链表类" class="headerlink" title="链表类"></a>链表类</h1><p>创建一个链表类LinkList，在该类中创建一个私有类Node，该类中有两个公有属性e和指向下一个节点的next。</p>
+<pre><code>public class LinkedList&lt;E&gt; {
+
+    private Node head：
+    private int size;
+
+    private class Node{
+        public E e;
+        public Node next;
+
+        public Node(Node e,Node next){
+            this.e=e;
+            this.next=next;
+        }
+
+        public Node(E e){
+            this(e,null);
+        }
+
+        public Node(){
+            this(null,null);
+        }
+
+        @Override
+        public String toString(){
+            return e.toString();
+        }
+    }
+}</code></pre><h1 id="添加新节点"><a href="#添加新节点" class="headerlink" title="添加新节点"></a>添加新节点</h1><p>添加第一个元素时，已经存在这样的一个空链表，要做的就是生成一个新节点，然后将这个节点的next指向head节点，再让新节点作为head节点。head=new Node(e,head);可以分拆为<code>Node node=new Node(e); node.next=head; head=node;</code>。 可以这么理解，head节点在类初始化时就已经存在了，new Node(e,head) 操作是让新节点和已经存在的head节点建立关联；关联后在给head属性赋予新的指向，即新node。</p>
+<pre><code>public void addFirst(E e){
+    head=new Node(e,head);
+    size++;
+}</code></pre><h1 id="向index位置添加节点"><a href="#向index位置添加节点" class="headerlink" title="向index位置添加节点"></a>向index位置添加节点</h1><p>需要注意的是preNode节点位置的变化过程。当 <code>i = 0</code> 的时候preNode是<code>i + 1</code>位置的元素；因此若让preNode是<code>index -1</code>位置的元素，需要循环<code>index-1-1</code>次。</p>
+<pre><code>public void add(int index,E e){
+    if(index&lt;0||index&gt;size){
+        throw new IllegalArgumentException(&quot;Add failed, illegal index .&quot;);
+    }
+    if (index == 0) {
+        addFirst(e);
+    }
+    Node preNode=head;
+    for(int i=0;i&lt;index-1;i++){
+        preNode=preNode.next;
+    }
+    preNode.next=new Node(e,preNode.next);
+    size++;
+}</code></pre><h1 id="链表的虚拟头结点"><a href="#链表的虚拟头结点" class="headerlink" title="链表的虚拟头结点"></a>链表的虚拟头结点</h1><p>在一般性的添加节点时，我们需要找到添加位置的前一个位置的元素。但是在添加头结点时，对其做了特殊处理，因为头结点没有前一个位置。为了让添加头结点和添加其他位置的节点过程一般化，引入了虚拟头结点。也就是head指向的是一个e为null的节点。 需要在原基础上更改链表类的构造方法，如下。</p>
+<pre><code>public LinkedList(){
+    dummyHead=new Node(null,null);
+    size=0;
+}</code></pre><p>即头结点的e和next都是null； 然后修改add方法。</p>
+<pre><code>public void add(int index,E e){
+    if(index&lt;0||index&gt;size){
+        throw new IllegalArgumentException(&quot;Add failed, illegal index .&quot;);
+    }
+    /*if (index == 0) {
+        addFirst(e);
+    }*/
+    Node preNode=dummyHead;
+    for(int i=0;i&lt;index;i++){
+        preNode=preNode.next;
+    }
+    preNode.next=new Node(e,preNode.next);
+    size++;
+}</code></pre><p>不再对在0位置添加节点做特殊化处理，同时因为head是0位置之前的一个节点，所以循环条件也做了变化。 这样当添加第一个结点时，只要让<code>index=0</code>就可以了。</p>
+<h1 id="链表的增删改查"><a href="#链表的增删改查" class="headerlink" title="链表的增删改查"></a>链表的增删改查</h1><p>主要看一下新增、删除和修改。</p>
+<h2 id="增"><a href="#增" class="headerlink" title="增"></a>增</h2><p>代码同上。</p>
+<h2 id="删"><a href="#删" class="headerlink" title="删"></a>删</h2><pre><code>public E delete(int index){
+    if(index&lt;0||index&gt;size){
+        throw new IllegalArgumentException(&quot;Add failed, illegal index .&quot;);
+    }
+    Node preNode=dummyHead;
+    for(int i=0;i&lt;index;i++){
+        preNode=preNode.next;
+    }
+    Node retNode=preNode.next;
+    preNode.next=retNode.next;
+    retNode.next=null;
+    return retNode.e;
+}</code></pre><h2 id="改"><a href="#改" class="headerlink" title="改"></a>改</h2><pre><code>public void set(int index,E e){
+    if(index&lt;0||index&gt;size){
+        throw new IllegalArgumentException(&quot;Add failed, illegal index .&quot;);
+    }
+    Node cur=dummyHead;
+    for(int i=0;i&lt;=index;i++){
+        cur=cur.next;
+    }
+    cur.e=e;
+}</code></pre><h1 id="时间复杂度分析"><a href="#时间复杂度分析" class="headerlink" title="时间复杂度分析"></a>时间复杂度分析</h1><p><img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/03/20190303184944-%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97.png" alt=""> 可以查看链表的整体时间复杂度一般要比数组高，所以它更适宜只对链表头做操作。</p>
+<h1 id="使用链表实现栈"><a href="#使用链表实现栈" class="headerlink" title="使用链表实现栈"></a>使用链表实现栈</h1><p>这比较简单，只要把栈的底层实现，即数组改为链表就可以了。从理论上来看，链表和数组实现栈的时间复杂度是一样的；如果进行大量的增删操作，可能链表实现的栈相对快一些，这是因为每新增一个节点，链表栈都要去寻找一个新的空间供新节点使用；但是实际上链表栈和数组栈的效率差异并不会像普通队列和循环队列那样十分的大。</p>
+<h1 id="使用链表实现队列"><a href="#使用链表实现队列" class="headerlink" title="使用链表实现队列"></a>使用链表实现队列</h1><p>队列需要对两端进行操作。经过分析，可以知道链表的头部增删操作都很方便，而尾部无论增还是删都不方便；即便加上一个尾指针，链表的尾部也只是方便了添加的操作。因此可以让链表的头部做队列的头部，尾部做队列的尾部。这样就可以从链表头只进行出队的操作，链表尾只进行入队的操作。 因为只对两端操作，所以在创建类时，不再给链表创建虚拟头结点。<br>在进行入队操作时，需要先判断队列是否为空。如果为空，直接让头结点和尾结点等于新增节点；否则<code>tail.next=new Node(e);tail=tail.next;</code>。 出队操作时，如果队列为空，报异常；否则让head指向第二个节点。注意，当删除队列头节点后，需要检查队列是否为空。如果为空，则让尾节点等于null。</p>
+<pre><code>Node ret=head;
+head=head.next;
+ret.next=null;
+if(head==null){
+    tail=null;
+}</code></pre>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/03/03/%E9%93%BE%E8%A1%A8/">https://jiaokun.github.io/2019/03/03/%E9%93%BE%E8%A1%A8/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"># 数据结构</a>
+                    
+                        <a href="/tags/%E9%93%BE%E8%A1%A8/"># 链表</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/03/06/XML%E7%9A%84%E8%AF%BB%E5%8F%96%E5%92%8C%E4%BF%9D%E5%AD%98/">XML的读取和保存</a>
+            
+            
+            <a class="next" rel="next" href="/2019/03/03/%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/">循环队列</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

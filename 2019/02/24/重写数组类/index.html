@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>重写数组类 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">重写数组类</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">二月 24, 2019&nbsp;&nbsp;23:47:16</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="int类型数组"><a href="#int类型数组" class="headerlink" title="int类型数组"></a>int类型数组</h1><pre><code>public class Main {
+
+    public static void main(String[] args) {
+        Array score=new Array(10);
+        for(int i=0;i&lt;8;i++){
+            score.addLast(i);
+        }
+
+        score.add(1,100);
+        score.addLast(99);
+        System.out.println(score.toString());
+
+        System.out.println(score.find(1));
+        System.out.println(score.contains(1));
+        System.out.println(score.remove(1));
+        System.out.println(score.toString());
+        System.out.println(score.removeElement(2));
+        System.out.println(score.toString());
+    }
+}</code></pre><h1 id="修改为泛型"><a href="#修改为泛型" class="headerlink" title="修改为泛型"></a>修改为泛型</h1><pre><code>public class Array&lt;T&gt; {
+    private T[] data;
+    private int size;
+
+    public Array() {
+        this(10);
+    }
+
+    public Array(int capacity) {
+        //java本身不支持直接new 一个泛型数组，所以用以下方法实现
+        data = (T[])new Object[capacity];
+        size = 0;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public int getCapacity() {
+        return data.length;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    /**
+     * 向数组末尾添加元素
+     *
+     * @param e
+     */
+    public void addLast(T e) {
+        add(size, e);
+    }
+
+    /**
+     * 向数组开头添加元素
+     *
+     * @param e
+     */
+    public void addFirst(T e) {
+        add(0, e);
+    }
+
+    /**
+     * 向任意合法位置添加元素
+     *
+     * @param index
+     * @param e
+     */
+    public void add(int index, T e) {
+        if (size == data.length) {
+            throw new IllegalArgumentException(&quot;Add is fail.Array is full&quot;);
+        }
+
+        if (index &lt; 0 || index &gt; size) {
+            throw new IllegalArgumentException(&quot;Add is fail.Require index &gt;= 0 and index &lt; size&quot;);
+        }
+
+        for (int i = size; i &gt; index; i--) {
+            data[i] = data[i - 1];
+        }
+        data[index] = e;
+        size++;
+    }
+
+    /**
+     * 获取索引位置的元素
+     * 通过这种封装，用户无法查询未使用的空间，保证了数据的安全性。
+     *
+     * @param index
+     * @return
+     */
+    public T get(int index) {
+        if (index &lt; 0 || index &gt;= size) {
+            throw new IllegalArgumentException(&quot;Get is failed.Index is illegal&quot;);
+        }
+        return data[index];
+    }
+
+    /**
+     * 修改索引位置的元素
+     *
+     * @param index
+     * @param e
+     */
+    public void set(int index, T e) {
+        if (index &lt; 0 || index &gt;= size) {
+            throw new IllegalArgumentException(&quot;Set is failed.Index is illegal&quot;);
+        }
+        data[index] = e;
+    }
+
+    /**
+     * 数组中是否包含某个元素
+     *
+     * @param e
+     * @return
+     */
+    public boolean contains(T e) {
+        for (int i = 0; i &lt; size; i++) {
+            //注意值的比较应修改为equals方法
+            if (data[i].equals(e)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 查询数组中某个元素的索引
+     *
+     * @param e
+     * @return 没有该元素则返回-1
+     */
+    public int find(T e) {
+        for (int i = 0; i &lt; size; i++) {
+            if (data[i].equals(e)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 删除index位置的元素，并且返回该元素
+     * 不用担心删除后原来size位置的元素，因为用无法访问到它。
+     * 但是最好再写一句data[size]=null 具体原因需要了解java的垃圾回收机制
+     *
+     * @param index
+     * @return
+     */
+    public T remove(int index) {
+        if (index &lt; 0 || index &gt;= size) {
+            throw new IllegalArgumentException(&quot;Remove failed.Require index &gt;=0 and index &lt; size&quot;);
+        }
+
+        T ret = data[index];
+        for (int i = index; i &lt; size - 1; i++) {
+            data[i] = data[i + 1];
+        }
+        //注意维护size
+        size--;
+        data[size]=null;
+        return ret;
+    }
+
+    /**
+     * 不用担心数组为空的情况，因为数组如果为空,remove方法就会抛出异常
+     * @return
+     */
+    public T removeFirst(){
+        return remove(0);
+    }
+
+    public T removeLast(){
+        return remove(size-1);
+    }
+
+    /**
+     * 从数组中删除元素e
+     * @param e
+     */
+    public boolean removeElement(T e){
+        int index=find(e);
+        if(index!=-1){
+            remove(index);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 重写toString()方法
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder();
+        res.append(String.format(&quot;size= %d,capacity= %d\n&quot;, size, data.length));
+        res.append(&quot;[&quot;);
+        for (int i = 0; i &lt; size; i++) {
+            res.append(data[i]);
+            if (i != size - 1) {
+                res.append(&quot;,&quot;);
+            }
+        }
+        res.append(&quot;]&quot;);
+        return res.toString();
+    }
+}</code></pre>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/02/24/%E9%87%8D%E5%86%99%E6%95%B0%E7%BB%84%E7%B1%BB/">https://jiaokun.github.io/2019/02/24/%E9%87%8D%E5%86%99%E6%95%B0%E7%BB%84%E7%B1%BB/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"># 数据结构</a>
+                    
+                        <a href="/tags/%E6%95%B0%E7%BB%84/"># 数组</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/02/25/%E9%87%8D%E5%86%99%E6%95%B0%E7%BB%84%E7%B1%BB(2)%E2%80%94%E2%80%94%E5%8A%A8%E6%80%81%E6%95%B0%E7%BB%84/">重写数组类(2)——动态数组</a>
+            
+            
+            <a class="next" rel="next" href="/2019/01/24/%E7%BD%91%E7%AB%99%E8%A2%AB%E6%81%B6%E6%84%8F%E8%A7%A3%E6%9E%90/">网站被恶意解析</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

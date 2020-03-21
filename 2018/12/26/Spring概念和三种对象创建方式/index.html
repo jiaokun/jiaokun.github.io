@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>Spring概念和三种对象创建方式 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Spring概念和三种对象创建方式</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 26, 2018&nbsp;&nbsp;14:37:50</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/ssm/">ssm</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><p>Spring属于容器性质，对每一层都提供技术支持。就像一个工厂，可以将所有对象创建和依赖关系维护交给Spring管理。 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/Spring%E4%B8%89%E5%B1%82%E6%9E%B6%E6%9E%84.jpg" alt="请输入图片描述"> </p>
+<h2 id="IOC-（-反转控制）"><a href="#IOC-（-反转控制）" class="headerlink" title="IOC （ 反转控制）"></a>IOC （ 反转控制）</h2><p>对象的创建及依赖关系的注入交由Spring。</p>
+<h2 id="DI（依赖注入）"><a href="#DI（依赖注入）" class="headerlink" title="DI（依赖注入）"></a>DI（依赖注入）</h2><p>注入方式：set方法注入、构造方法注入、字段注入 注入类型：值类型、引用类型</p>
+<h2 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h2><p>原始接口，每次获得对象时才会创建。</p>
+<h2 id="ApplicationContext"><a href="#ApplicationContext" class="headerlink" title="ApplicationContext"></a>ApplicationContext</h2><p>容器一启动就会创建创建容器中配置的所有对象。</p>
+<h2 id="Bean元素的scope属性"><a href="#Bean元素的scope属性" class="headerlink" title="Bean元素的scope属性"></a>Bean元素的scope属性</h2><ul>
+<li>singleton：单例对象，在容器中只存在一个实例。默认为singleton。</li>
+<li>prototype：多例原型，每次创建都是新的对象。</li>
+<li>此外还有request、session等。</li>
+</ul>
+<h1 id="三种对象创建方式"><a href="#三种对象创建方式" class="headerlink" title="三种对象创建方式"></a>三种对象创建方式</h1><h2 id="构造器实例化"><a href="#构造器实例化" class="headerlink" title="构造器实例化"></a>构造器实例化</h2><h3 id="Bean："><a href="#Bean：" class="headerlink" title="Bean："></a>Bean：</h3><pre><code>    public class Bean {
+    }</code></pre><h3 id="测试类"><a href="#测试类" class="headerlink" title="测试类"></a>测试类</h3><pre><code>   public class TestConstructor {
+       public static void main(String[] args){
+           ApplicationContext applicationContext=new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+           Bean bean1= (Bean) applicationContext.getBean(&quot;bean&quot;);
+           System.out.println(bean1);
+       }
+    }</code></pre><h3 id="applicationContext-xml"><a href="#applicationContext-xml" class="headerlink" title="applicationContext.xml"></a>applicationContext.xml</h3><pre><code>    &lt;bean id=&quot;bean&quot; class=&quot;com.me.bean.instance.constructor.Bean&quot;&gt;&lt;/bean&gt;</code></pre><h2 id="静态工厂方式实例化"><a href="#静态工厂方式实例化" class="headerlink" title="静态工厂方式实例化"></a>静态工厂方式实例化</h2><h3 id="Bean"><a href="#Bean" class="headerlink" title="Bean"></a>Bean</h3><pre><code>    public class Bean2 {
+    }</code></pre><h3 id="工厂类"><a href="#工厂类" class="headerlink" title="工厂类"></a>工厂类</h3><pre><code>    public class StaticFactory {
+        public static Bean2 getBean(){
+            return new Bean2();
+        }
+    }</code></pre><h3 id="测试类-1"><a href="#测试类-1" class="headerlink" title="测试类"></a>测试类</h3><pre><code>    public class TestStaticFactory {
+        public static void main(String[] args){
+            ApplicationContext applicationContext=new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+            Bean2 bean2=(Bean2)applicationContext.getBean(&quot;bean2&quot;);
+            System.out.println(bean2);
+        }
+    }</code></pre><h3 id="applicationContext-xml-1"><a href="#applicationContext-xml-1" class="headerlink" title="applicationContext.xml"></a>applicationContext.xml</h3><pre><code>    &lt;bean id=&quot;bean2&quot; class=&quot;com.me.bean.instance.static_factory.StaticFactory&quot; factory-method=&quot;getBean&quot;&gt;&lt;/bean&gt;</code></pre><h2 id="实例工厂方式实例化"><a href="#实例工厂方式实例化" class="headerlink" title="实例工厂方式实例化"></a>实例工厂方式实例化</h2><h3 id="Bean-1"><a href="#Bean-1" class="headerlink" title="Bean"></a>Bean</h3><pre><code>    public class Bean3 {
+    }</code></pre><h3 id="工厂类-1"><a href="#工厂类-1" class="headerlink" title="工厂类"></a>工厂类</h3><pre><code>    public class InstanceFactory {
+        public Bean3 getBean(){
+            return new Bean3();
+        }
+    }</code></pre><h3 id="测试类-2"><a href="#测试类-2" class="headerlink" title="测试类"></a>测试类</h3><pre><code>    public class TestInstanceFactory {
+        public static void main(String[] args){
+            ApplicationContext applicationContext=new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);
+            Bean3 bean3=(Bean3)applicationContext.getBean(&quot;bean3&quot;);
+            System.out.println(bean3);
+        }
+    }</code></pre><h3 id="applicationContext-xml-2"><a href="#applicationContext-xml-2" class="headerlink" title="applicationContext.xml"></a>applicationContext.xml</h3><pre><code>     &lt;bean id=&quot;instanceFactory&quot; class=&quot;com.me.instance.instance_factory.InstanceFactory&quot;&gt;&lt;/bean&gt;
+    &lt;bean id=&quot;bean3&quot; factory-bean=&quot;instanceFactory&quot; factory-method=&quot;getBean&quot;&gt;&lt;/bean&gt;</code></pre>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2018/12/26/Spring%E6%A6%82%E5%BF%B5%E5%92%8C%E4%B8%89%E7%A7%8D%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F/">https://jiaokun.github.io/2018/12/26/Spring%E6%A6%82%E5%BF%B5%E5%92%8C%E4%B8%89%E7%A7%8D%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/spring/"># spring</a>
+                    
+                        <a href="/tags/ssm/"># ssm</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/12/26/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5/">属性注入</a>
+            
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

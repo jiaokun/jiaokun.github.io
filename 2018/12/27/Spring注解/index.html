@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>Spring注解 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Spring注解</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 27, 2018&nbsp;&nbsp;15:01:15</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/ssm/">ssm</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h1><h2 id="注解对象"><a href="#注解对象" class="headerlink" title="注解对象"></a>注解对象</h2><p>使用context命名空间，通知spring扫描指定包下的所有bean类，进行注解解析。</p>
+<ul>
+<li><p>applicationContext.xml</p>
+<?xml version="1.0" encoding="UTF-8"?>
+<p>&lt;beans xmlns=”<a href="http://www.springframework.org/schema/beans&quot;" target="_blank" rel="noopener">http://www.springframework.org/schema/beans&quot;</a></p>
+<pre><code>   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+   xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+   xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;</code></pre><p>&lt;context:component-scan base-package=”com.me.annotation” /&gt;</p>
+</beans>
+
+
+</li>
+</ul>
+<ul>
+<li><p>UserDaoImpl</p>
+<p>@Repository<br>public class UserDaoImpl implements UserDao{</p>
+<pre><code>@Override
+public void save() {
+    System.out.println(&quot;UserDaoImpl...&quot;);
+}</code></pre><p>}</p>
+</li>
+</ul>
+<ul>
+<li><p>UserServiceImpl</p>
+<p>@Service<br>public class UserServiceImpl implements UserService{</p>
+<pre><code>@Autowired
+private UserDao userDao;
+
+@Override
+public void save() {
+    System.out.println(&quot;UserServiceImpl...&quot;);
+    this.userDao.save();
+}</code></pre><p>}</p>
+</li>
+</ul>
+<ul>
+<li><p>UserController</p>
+<p>@Controller(“userController”)<br>public class UserControllerImpl implements UserController{</p>
+<pre><code>@Autowired
+private UserService userService;
+@Override
+public void save() {
+    System.out.println(&quot;UserControllerImpl...&quot;);
+    this.userService.save();
+}</code></pre><p>}</p>
+</li>
+</ul>
+<p>@Repository、@Service、@Controller功能和@Component是一样的，都可以将对象注解到容器，且都可以给对象<strong>指定名字</strong>，如@Service(“userService”)。</p>
+<h2 id="修改对象的作用范围"><a href="#修改对象的作用范围" class="headerlink" title="修改对象的作用范围"></a>修改对象的作用范围</h2><p><img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A50.png" alt="请输入图片描述"></p>
+<h2 id="值类型注入"><a href="#值类型注入" class="headerlink" title="值类型注入"></a>值类型注入</h2><ul>
+<li>方拾一，通过set方法赋值，推荐使用 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A51.png" alt="请输入图片描述"></li>
+<li>方式二，通过反射的field赋值，破坏了封装性，但是更直观，因此也被更多使用。 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A52.png" alt="请输入图片描述"> 如果只给一个属性赋值，并且该属性是value，则“value=”可以省略，如@Value(“张三”)、@Repository(“userDao”)。</li>
+</ul>
+<h2 id="引用类型三种注入方式"><a href="#引用类型三种注入方式" class="headerlink" title="引用类型三种注入方式"></a>引用类型三种注入方式</h2><ul>
+<li>自动装配 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A53.png" alt="请输入图片描述"> 问题：如果存在多个类型一致的对象，则无法选择具体注入哪一个对象。</li>
+<li>手动注入，指定bean对象名称。如果存在多个类型一致的对象，推荐使用。 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A54.png" alt="请输入图片描述"></li>
+<li>自动装配且指定名称 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A55.png" alt="请输入图片描述"></li>
+</ul>
+<h2 id="初始化和销毁方法"><a href="#初始化和销毁方法" class="headerlink" title="初始化和销毁方法"></a>初始化和销毁方法</h2><ul>
+<li>初始化和销毁方法 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A56.png" alt="请输入图片描述"> <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A57.png" alt="请输入图片描述"> <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A58.png" alt="请输入图片描述"></li>
+<li>测试类 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A59.png" alt="请输入图片描述"></li>
+<li>运行结果 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A510.png" alt="请输入图片描述"> 问题：userController没有被销毁，是因为其设置了作用域为“prototype”。prototype每次都会创建新的对象，但是不管销毁。 <img src="https://typecho-1257149529.cos.ap-beijing.myqcloud.com/typecho/blog_images/2018/12/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A511.png" alt="请输入图片描述"></li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2018/12/27/Spring%E6%B3%A8%E8%A7%A3/">https://jiaokun.github.io/2018/12/27/Spring%E6%B3%A8%E8%A7%A3/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/spring/"># spring</a>
+                    
+                        <a href="/tags/ssm/"># ssm</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2018/12/27/Aop/">AOP</a>
+            
+            
+            <a class="next" rel="next" href="/2018/12/26/%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5/">属性注入</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

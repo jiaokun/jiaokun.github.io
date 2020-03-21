@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>数据绑定和乱码过滤器 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">数据绑定和乱码过滤器</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">一月 20, 2019&nbsp;&nbsp;22:53:24</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/ssm/">ssm</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>程序运行时，在处理器执行之前，处理器适配器把请求参数信息绑定到处理器的方法形参上。</p>
+<h1 id="默认支持的数据类型"><a href="#默认支持的数据类型" class="headerlink" title="默认支持的数据类型"></a>默认支持的数据类型</h1><ul>
+<li><p>HttpServletRequest</p>
+</li>
+<li><p>HttpServletResponse</p>
+</li>
+<li><p>HttpSession</p>
+</li>
+<li><p>Model 相当于ModelAndView中的Model</p>
+<p>@RequestMapping(“first”)<br>public String first(Model model){</p>
+<pre><code>model.addAttribute(&quot;msg&quot;,&quot;&quot;);
+return &quot;hello&quot;;</code></pre><p>}</p>
+</li>
+</ul>
+<h1 id="支持简单的java数据类型"><a href="#支持简单的java数据类型" class="headerlink" title="支持简单的java数据类型"></a>支持简单的java数据类型</h1><p><strong>程序示例</strong> <img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/01/20220502-%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A01.png" alt=""></p>
+<pre><code>@RequestMapping(&quot;/second&quot;)
+public String second(int id,String name){
+    System.err.println(id);
+    System.err.println(name);
+    return &quot;hello&quot;;
+}</code></pre><p>注意传递的参数名要和方法形参一致，否则结果为空，顺序可以不一致。 <img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/01/20220750-%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A02.png" alt=""> 解决办法：@RequestParam <img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/01/20221234-%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A03.png" alt=""></p>
+<ul>
+<li><p>value:指定绑定的参数名称</p>
+</li>
+<li><p>required:默认为true，即url传递参数不可缺少。</p>
+</li>
+<li><p>defaultValue：没有接收到值时的默认值</p>
+<p>@RequestMapping(“/second”)<br>public String second(int id,@RequestParam(value = “username”,required=false,defaultValue = “”) String name){</p>
+<pre><code>System.err.println(id);
+System.err.println(name);
+return &quot;hello&quot;;</code></pre><p>}</p>
+</li>
+</ul>
+<h1 id="pojo对象类型"><a href="#pojo对象类型" class="headerlink" title="pojo对象类型"></a>pojo对象类型</h1><h2 id="User类"><a href="#User类" class="headerlink" title="User类"></a>User类</h2><pre><code>public class User {
+    private Integer id;
+    private String username;
+    private String password;</code></pre><h2 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h2><p><img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/01/20224645-%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A04.png" alt=""></p>
+<h2 id="登录页"><a href="#登录页" class="headerlink" title="登录页"></a>登录页</h2><p><img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/01/20224829-%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A05.png" alt=""> 注意红色标示部分的name要和pojo类的属性名称一致。</p>
+<h1 id="乱码过滤器"><a href="#乱码过滤器" class="headerlink" title="乱码过滤器"></a>乱码过滤器</h1><p>在web.xml中配置</p>
+<pre><code>   &lt;!--乱码过滤器--&gt;
+&lt;filter&gt;
+    &lt;filter-name&gt;encodingFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;encoding&lt;/param-name&gt;
+        &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;encodingFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</code></pre><h1 id="集合类型"><a href="#集合类型" class="headerlink" title="集合类型"></a>集合类型</h1><h2 id="index-jsp"><a href="#index-jsp" class="headerlink" title="index.jsp"></a>index.jsp</h2><pre><code>&lt;form action=&quot;${pageContext.request.contextPath}/three/fourth.action&quot;&gt;
+      &lt;input type=&quot;checkbox&quot; name=&quot;ids&quot; value=&quot;1&quot;/&gt;1.
+      &lt;input type=&quot;checkbox&quot; name=&quot;ids&quot; value=&quot;2&quot;/&gt;2.
+      &lt;input type=&quot;checkbox&quot; name=&quot;ids&quot; value=&quot;3&quot;/&gt;3.
+      &lt;input type=&quot;submit&quot; value=&quot;提交&quot;/&gt;
+&lt;/form&gt;
+注意name和处理器方法的形参名一致。</code></pre><h2 id="处理器-1"><a href="#处理器-1" class="headerlink" title="处理器"></a>处理器</h2><pre><code>@RequestMapping(&quot;/fourth&quot;)
+    public void fourth(Integer[] ids){
+        System.err.println(ids);
+}</code></pre><h1 id="json"><a href="#json" class="headerlink" title="json"></a>json</h1><pre><code>&lt;form action=&quot;&quot;&gt;
+    用户名：&lt;input type=&quot;text&quot; id=&quot;username&quot;/&gt;&lt;br/&gt;
+    密码：&lt;input type=&quot;text&quot; id=&quot;pwd&quot;/&gt;
+    &lt;input type=&quot;button&quot; value=&quot;提交&quot; onclick=&quot;login()&quot;/&gt;
+&lt;/form&gt;
+
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;${pageContext.request.contextPath}/js/jquery-3.1.1.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+    function login() {
+        var username=$(&quot;#username&quot;).val();
+        var pwd=$(&quot;#pwd&quot;).val();
+        //ajax请求方法
+        var jsonData={username:username,password:pwd};
+        $.ajax({
+            url:&#39;${pageContext.request.contextPath}/login&#39;,
+            type:&#39;post&#39;,
+            data:jsonData,
+            dataType:&#39;json&#39;,//返回数据类型指定为json
+            success:function(result){//请求成功后回调，result为响应的数据信息
+                alert(result.data);
+            }
+        })
+    }
+&lt;/script&gt;</code></pre><p>@Responsebody 注解表示把响应的类型（比如字符串）转化为指定的格式，大多为json格式,把该方法的返回的结果直接写入 HTTP 响应正文（ResponseBody）中，一般在异步获取数据时使用； 在使用 @RequestMapping 后，返回值通常解析为跳转路径，加上 @Responsebody 后返回结果不会被解析为跳转路径，而是直接写入HTTP 响应正文中。例如，异步获取 json 数据，加上 @Responsebody 注解后，就会直接返回 json 数据。</p>
+<pre><code>@Controller
+public class FourController {
+    @RequestMapping(&quot;/login&quot;)
+    @ResponseBody 
+    public String login(User user){
+        JSONObject jsonObject=new JSONObject();
+        if(&quot;kim&quot;.equals(user.getUsername())){
+            jsonObject.put(&quot;data&quot;,&quot;登陆成功&quot;);
+        }else{
+            jsonObject.put(&quot;data&quot;,&quot;登陆失败&quot;);
+        }
+        return jsonObject.toJSONString();
+    }
+}</code></pre><h2 id="请求静态资源404"><a href="#请求静态资源404" class="headerlink" title="请求静态资源404"></a>请求静态资源404</h2><p>配置静态资源的 访问映射，不会被前端控制器拦截。 mapping=” /js/* *”:表示js目录下和js子包目录下的所有资源。</p>
+<pre><code>&lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot;&gt;&lt;/mvc:resources&gt;</code></pre><h2 id="json对象转json字符串"><a href="#json对象转json字符串" class="headerlink" title="json对象转json字符串"></a>json对象转json字符串</h2><pre><code>var jsonStr=JSON.stringify(data);</code></pre><h3 id="前台向后台传递json字符串"><a href="#前台向后台传递json字符串" class="headerlink" title="前台向后台传递json字符串"></a>前台向后台传递json字符串</h3><p>需要在前台ajax里加一句“contentType:’application/json’”</p>
+<pre><code>function login2() {
+    var username=$(&quot;#username&quot;).val();
+    var pwd=$(&quot;#pwd&quot;).val();
+    //ajax请求方法
+    var jsonData={username:username,password:pwd};
+    $.ajax({
+        url:&quot;${pageContext.request.contextPath}/login2&quot;,
+        type:&quot;post&quot;,
+        data:JSON.stringify(jsonData),//转为json字符串
+        contentType:&#39;application/json&#39;,
+        dataType:&quot;json&quot;,//返回数据类型指定为json
+        success:function(result){//请求成功后回调，result为响应的数据信息
+            alert(result.data);
+        }
+    })
+}</code></pre><p>处理器端接收json字符串,@RequestBody的作用就是将请求中的内容转为指定的格式，如json格式。</p>
+<pre><code>/接收json字符串
+@RequestMapping(&quot;/login2&quot;)
+@ResponseBody 
+public String login2(@RequestBody User user){
+    JSONObject jsonObject=new JSONObject();
+    if(&quot;kim&quot;.equals(user.getUsername())){
+        jsonObject.put(&quot;data&quot;,&quot;登陆成功了&quot;);
+        System.err.println(&quot;success了&quot;);
+    }else{
+        jsonObject.put(&quot;data&quot;,&quot;登陆失败&quot;);
+    }
+    return jsonObject.toJSONString();
+}</code></pre><h2 id="json字符串转json对象"><a href="#json字符串转json对象" class="headerlink" title="json字符串转json对象"></a>json字符串转json对象</h2><pre><code>var jsonObject=JSON.parse(jsonStr);</code></pre>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/01/20/%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A%E5%92%8C%E4%B9%B1%E7%A0%81%E8%BF%87%E6%BB%A4%E5%99%A8/">https://jiaokun.github.io/2019/01/20/%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A%E5%92%8C%E4%B9%B1%E7%A0%81%E8%BF%87%E6%BB%A4%E5%99%A8/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/springMVC/"># springMVC</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/01/22/java%E5%BC%80%E5%8F%91%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83/">java开发配置环境</a>
+            
+            
+            <a class="next" rel="next" href="/2019/01/20/springMVC%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/">springMVC注解开发</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

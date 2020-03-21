@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>linux搭建SVN服务器 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">linux搭建SVN服务器</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">六月 30, 2019&nbsp;&nbsp;22:39:30</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/">未分类</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>此linux系统为阿里云服务器CentOS，所以操作完成后要记得开放SVN服务端口号</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><pre><code># yum install -y apr-util
+# svnserve --version</code></pre><p>此时可能报错：</p>
+<pre><code>svnserve: error while loading shared libraries: libaprutil-1.so.0: cannot open shared object file: No such file or directory</code></pre><h2 id="找不到libaprutil-1-so-0解决办法"><a href="#找不到libaprutil-1-so-0解决办法" class="headerlink" title="找不到libaprutil-1.so.0解决办法"></a>找不到libaprutil-1.so.0解决办法</h2><ol>
+<li><p>找到libaprutil-1.so.0</p>
+<pre><code># find / -name libaprutil-1.so.0 </code></pre><p>显示目录： <img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/06/20190630212038.png" alt=""></p>
+</li>
+<li><p>然后将apr依赖包添加到共享库：</p>
+<h1 id="more-etc-ld-so-conf"><a href="#more-etc-ld-so-conf" class="headerlink" title="more /etc/ld.so.conf"></a>more /etc/ld.so.conf</h1></li>
+</ol>
+<p>如图所示： <img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/06/20190630211950.png" alt=""></p>
+<ol start="3">
+<li><p>创建apr共享库配置文件</p>
+<h1 id="cd-etc-ld-so-conf-d"><a href="#cd-etc-ld-so-conf-d" class="headerlink" title="cd /etc/ld.so.conf.d/"></a>cd /etc/ld.so.conf.d/</h1><h1 id="vi-httpd-apr-conf"><a href="#vi-httpd-apr-conf" class="headerlink" title="vi httpd-apr.conf"></a>vi httpd-apr.conf</h1></li>
+</ol>
+<p>在httpd-apr.conf中将第一步显示的目录<code>/www/server/apache/lib</code>添加进去。</p>
+<ol start="4">
+<li><p>更新共享库配置</p>
+<pre><code># ldconfig -v</code></pre></li>
+<li><p>检测是否安装成功</p>
+<pre><code># svn --version</code></pre><h2 id="svn配置多个仓库"><a href="#svn配置多个仓库" class="headerlink" title="svn配置多个仓库"></a>svn配置多个仓库</h2></li>
+<li><p>新建一个总目录</p>
+<pre><code># mkdir /目录/总目录</code></pre></li>
+<li><p>创建多个版本库</p>
+<pre><code># svnadmin create /目录/总目录/版本库1
+# svnadmin create /目录/总目录/版本库2</code></pre></li>
+<li><p>将其中一个版本库中的conf目录下的authz与passwd文件复制到总目录中。</p>
+<pre><code># cp authz ../../
+# cp passwd ../../</code></pre></li>
+<li><p>修改两个版本库中conf目录下的svnserve.conf，注意password-db和authz-db的位置需要向上两级。</p>
+<pre><code>vim svnserve.conf</code></pre><p><img src="https://blog-1257149529.cos.ap-beijing.myqcloud.com/images/2019/06/20190630220404.png" alt=""></p>
+</li>
+<li><p>向添加passwd添加账户和密码</p>
+</li>
+<li><p>在authz中配置权限</p>
+<p>   [groups]<br>   group1=user1,uers2<br>   group2=user3<br>   [/]<br>   *=rw    #配置所有用户对总目录都有读权限<br>   [版本库1名:/]<br>   @group1=rw<br>   [版本库2名:/]<br>   @group2=rw </p>
+</li>
+<li><p>重启svn</p>
+<h1 id="svnserve-d-r-home-svn"><a href="#svnserve-d-r-home-svn" class="headerlink" title="svnserve -d -r /home/svn/"></a>svnserve -d -r /home/svn/</h1></li>
+<li><p>服务器开放SVN端口</p>
+</li>
+<li><p>查看svn服务是否开启</p>
+<h1 id="ps-ef-grep-svn"><a href="#ps-ef-grep-svn" class="headerlink" title="ps -ef |grep svn"></a>ps -ef |grep svn</h1></li>
+<li><p>关闭SVN</p>
+<h1 id="killall-svnserve"><a href="#killall-svnserve" class="headerlink" title="killall svnserve"></a>killall svnserve</h1></li>
+</ol>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/06/30/linux%E6%90%AD%E5%BB%BASVN%E6%9C%8D%E5%8A%A1%E5%99%A8/">https://jiaokun.github.io/2019/06/30/linux%E6%90%AD%E5%BB%BASVN%E6%9C%8D%E5%8A%A1%E5%99%A8/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/08/14/Oracle%20%E7%9A%84%20ROW_NUMBER()%20OVER()%E5%87%BD%E6%95%B0/">Oracle 的 ROW_NUMBER() OVER()函数</a>
+            
+            
+            <a class="next" rel="next" href="/2019/06/29/%E8%BF%87%E6%BB%A4%E5%99%A8%E5%92%8C%E5%80%9F%E5%8A%A9%E8%BF%87%E6%BB%A4%E5%99%A8%E5%AE%9E%E7%8E%B0%E7%99%BB%E9%99%86%E9%80%80%E5%87%BA/">过滤器和借助过滤器实现登陆退出</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

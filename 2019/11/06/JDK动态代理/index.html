@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>JDK动态代理 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">JDK动态代理</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十一月 6, 2019&nbsp;&nbsp;0:00:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>JDK动态代理与静态代理是相对的，静态代理是在编译期就确定了代理类和被代理类的关系，且生成代理类。而且静态代理要求被代理的接口必须有其实现，因为代理类实现接口方法实际上是调用接口实现类的方法实现的。而动态代理是在运行期利用JVM的反射机制生成代理类,这里是直接生成类的字节码，然后通过类加载器载入JAVA虚拟机执行。 </p>
+<h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><p>不做赘述，直接上demo。</p>
+<ul>
+<li><p>被代理类接口</p>
+<pre><code class="java">public interface ISubject {
+    void doSomething();
+}</code></pre>
+</li>
+<li><p>被代理类实现</p>
+<pre><code class="java">public class SubjectImpl implements ISubject {
+
+    @Override
+    public void doSomething() {
+        System.out.println(&quot;doSomething...&quot;);
+    }
+}</code></pre>
+</li>
+<li><p>InvocationHandler工具类</p>
+<pre><code class="java">import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+public class JDKDynamicProxy implements InvocationHandler{
+
+    private Object target;
+
+    public JDKDynamicProxy(){
+    }
+
+    public JDKDynamicProxy(Object target){
+        this.target=target;
+    }
+
+    public &lt;T&gt;T getProxy(){
+        System.getProperties().put(&quot;sun.misc.ProxyGenerator.saveGeneratedFiles&quot;, &quot;true&quot;);
+        // return (T) Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces(),this);
+        return (T) Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces(),this);
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println(&quot;before...&quot;);
+        Object result=method.invoke(target,args);
+        System.out.println(&quot;after...&quot;);
+        return result;
+    }
+}</code></pre>
+</li>
+<li><p>测试类</p>
+<pre><code class="java">public class TestProxy {
+
+    public static void main(String[] args) {
+        System.getProperties().put(&quot;sun.misc.ProxyGenerator.saveGeneratedFiles&quot;,&quot;true&quot;);
+
+        ISubject subject=new JDKDynamicProxy(new SubjectImpl()).getProxy();
+        //ISubject subject= (ISubject) Proxy.newProxyInstance(subjectImpl.getClass().getClassLoader(),subjectImpl.getClass().getInterfaces(),new JDKDynamicProxy(subjectImpl));
+        //ISubject subject= (ISubject) Proxy.newProxyInstance(ISubject.class.getClassLoader(),new Class[]{ISubject.class},new JDKDynamicProxy(subjectImpl));
+        subject.doSomething();
+    }
+}</code></pre>
+</li>
+<li><p>运行结果</p>
+<pre><code>before...
+doSomething...
+after...</code></pre></li>
+<li><p>生成的代理类文件</p>
+<pre><code class="java">//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.sun.proxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
+
+public final class $Proxy0 extends Proxy implements ISubject {
+    private static Method m1;
+    private static Method m3;
+    private static Method m2;
+    private static Method m0;
+
+    public $Proxy0(InvocationHandler var1) throws  {
+        super(var1);
+    }
+
+    public final boolean equals(Object var1) throws  {
+        try {
+            return (Boolean)super.h.invoke(this, m1, new Object[]{var1});
+        } catch (RuntimeException | Error var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final void doSomething() throws  {
+        try {
+            super.h.invoke(this, m3, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final String toString() throws  {
+        try {
+            return (String)super.h.invoke(this, m2, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final int hashCode() throws  {
+        try {
+            return (Integer)super.h.invoke(this, m0, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    static {
+        try {
+            m1 = Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;equals&quot;, Class.forName(&quot;java.lang.Object&quot;));
+            m3 = Class.forName(&quot;ISubject&quot;).getMethod(&quot;doSomething&quot;);
+            m2 = Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;toString&quot;);
+            m0 = Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;hashCode&quot;);
+        } catch (NoSuchMethodException var2) {
+            throw new NoSuchMethodError(var2.getMessage());
+        } catch (ClassNotFoundException var3) {
+            throw new NoClassDefFoundError(var3.getMessage());
+        }
+    }
+}</code></pre>
+</li>
+</ul>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><ul>
+<li><p><strong>获取代理类——调用Proxy.newProxyInstance</strong></p>
+<ol>
+<li><p>获取代理类的Class实例</p>
+<p><code>getProxyClass0(loader, intfs)</code></p>
+</li>
+<li><p>获取代理类实例的构造方法，并确保其访问权限</p>
+<p><code>final Constructor&lt;?&gt; cons = cl.getConstructor(constructorParams)</code></p>
+</li>
+<li><p>利用反射机制调用构造方法，返回代理类实例，参数是调用Proxy.newProxyInstance时传进来的InvocationHandler实例h 。</p>
+<p> <code>cons.newInstance(new Object[]{h})</code></p>
+</li>
+</ol>
+</li>
+<li><p>方法实现</p>
+<p>前面利用反射机制调用代理类的构造方法时传入了InvocationHandler实例h ，代理类$Proxy0的构造方法如下：</p>
+<pre><code class="java">public $Proxy0(InvocationHandler var1) throws  {
+    super(var1);
+}</code></pre>
+<p>这是调用父类的构造函数，并传入参数h。</p>
+<p>所以在获取到代理类实例并执行方法时如测试类的<code>subject.doSomething()</code>，实际调用的是代理类内的<code>doSomething()</code>，如下所示。</p>
+<pre><code class="java">public final void doSomething() throws  {
+    try {
+        super.h.invoke(this, m3, (Object[])null);
+    } catch (RuntimeException | Error var2) {
+        throw var2;
+    } catch (Throwable var3) {
+        throw new UndeclaredThrowableException(var3);
+    }
+}</code></pre>
+<p> 所以JDK动态代理的接口方法实现逻辑是完全由InvocationHandler实例的invoke方法决定的 。</p>
+</li>
+</ul>
+<h3 id="获取代理类的Class实例探究"><a href="#获取代理类的Class实例探究" class="headerlink" title="获取代理类的Class实例探究"></a>获取代理类的Class实例探究</h3><ul>
+<li><p>getProxyClass0(loader, intfs)方法</p>
+<pre><code class="java">private static Class&lt;?&gt; getProxyClass0(ClassLoader loader,
+                                       Class&lt;?&gt;... interfaces) {
+    if (interfaces.length &gt; 65535) {
+        throw new IllegalArgumentException(&quot;interface limit exceeded&quot;);
+    }
+
+    // If the proxy class defined by the given loader implementing
+    // the given interfaces exists, this will simply return the cached copy;
+    // otherwise, it will create the proxy class via the ProxyClassFactory
+    return proxyClassCache.get(loader, interfaces);
+}</code></pre>
+<p>在Proxy类<code>getProxyClass0(loader, intfs)</code>方法中并无核心代码，主要是方法最后一行去缓存对象中获取代理类实例。</p>
+</li>
+<li><p>java.lang.reflect.WeakCache 类</p>
+<pre><code class="java">private static final WeakCache&lt;ClassLoader, Class&lt;?&gt;[], Class&lt;?&gt;&gt;
+   proxyClassCache = new WeakCache&lt;&gt;(new KeyFactory(), new ProxyClassFactory());</code></pre>
+<p><code>proxyClassCache</code>是Proxy类的静态变量，调用WeakCache类的构造函数初始化时，传入<strong>keyFactory</strong>和<strong>proxyClassFactory</strong>两个实例。注意WeakCache对象的数据结构包含两级键值。接下来就进入WeakCache类的get方法查看一番。</p>
+</li>
+<li><p>WeakCache类</p>
+<ul>
+<li><p>get方法代码</p>
+<pre><code class="java">public V get(K key, P parameter) {
+    Objects.requireNonNull(parameter);
+
+    expungeStaleEntries();
+
+    Object cacheKey = CacheKey.valueOf(key, refQueue);
+
+    // lazily install the 2nd level valuesMap for the particular cacheKey
+    ConcurrentMap&lt;Object, Supplier&lt;V&gt;&gt; valuesMap = map.get(cacheKey);
+    if (valuesMap == null) {
+        ConcurrentMap&lt;Object, Supplier&lt;V&gt;&gt; oldValuesMap
+            = map.putIfAbsent(cacheKey,
+                              valuesMap = new ConcurrentHashMap&lt;&gt;());
+        if (oldValuesMap != null) {
+            valuesMap = oldValuesMap;
+        }
+    }
+
+    // create subKey and retrieve the possible Supplier&lt;V&gt; stored by that
+    // subKey from valuesMap
+    Object subKey = Objects.requireNonNull(subKeyFactory.apply(key, parameter));
+    Supplier&lt;V&gt; supplier = valuesMap.get(subKey);
+    Factory factory = null;
+
+    while (true) {
+        if (supplier != null) {
+            // supplier might be a Factory or a CacheValue&lt;V&gt; instance
+            V value = supplier.get();
+            if (value != null) {
+                return value;
+            }
+        }
+        // else no supplier in cache
+        // or a supplier that returned null (could be a cleared CacheValue
+        // or a Factory that wasn&#39;t successful in installing the CacheValue)
+
+        // lazily construct a Factory
+        if (factory == null) {
+            factory = new Factory(key, parameter, subKey, valuesMap);
+        }
+
+        if (supplier == null) {
+            supplier = valuesMap.putIfAbsent(subKey, factory);
+            if (supplier == null) {
+                // successfully installed Factory
+                supplier = factory;
+            }
+            // else retry with winning supplier
+        } else {
+            if (valuesMap.replace(subKey, supplier, factory)) {
+                // successfully replaced
+                // cleared CacheEntry / unsuccessful Factory
+                // with our Factory
+                supplier = factory;
+            } else {
+                // retry with current supplier
+                supplier = valuesMap.get(subKey);
+            }
+        }
+    }
+}</code></pre>
+</li>
+<li><p>get方法核心代码解释</p>
+<p><strong>获取一级和二级键。</strong></p>
+<pre><code class="JAVA">//根据类加载器计算一级键 cacheKey=f(loader);
+Object cacheKey = CacheKey.valueOf(key, refQueue);
+
+//根据接口计算二级键 subKey=g(interfaces);
+Object subKey = Objects.requireNonNull(subKeyFactory.apply(key, parameter));</code></pre>
+<p>注意这里的subKeyFactory是Proxy初始化WeakCache类对象proxyClassCache时的入参<code>new KeyFactory()</code>；KeyFactory是Proxy的内部类。不妨进入apply简单看一下：</p>
+<pre><code class="java">@Override
+public Object apply(ClassLoader classLoader, Class&lt;?&gt;[] interfaces) {
+    switch (interfaces.length) {
+        case 1: return new Key1(interfaces[0]); // the most frequent
+        case 2: return new Key2(interfaces[0], interfaces[1]);
+        case 0: return key0;
+        default: return new KeyX(interfaces);
+    }
+}</code></pre>
+<p><strong>循环</strong></p>
+<p>​        接下来是一个while循环，第一次循环前factory和supplier都为null ，所以循环体内只是做了一些初始化的工作，并将factory赋值给了supplier（Factory类是WeakCache的内部类，且继承了Supplier类）。</p>
+<p>第二次循环时，执行<code>V value = supplier.get()</code>，实际上就是调用<code>factory.get()</code>方法获取动态代理类的Class实例 。</p>
+</li>
+<li><p>factory.get()方法</p>
+<p>方法完整代码如下：</p>
+<pre><code class="java">@Override
+public synchronized V get() { // serialize access
+    // re-check
+    Supplier&lt;V&gt; supplier = valuesMap.get(subKey);
+    if (supplier != this) {
+        // something changed while we were waiting:
+        // might be that we were replaced by a CacheValue
+        // or were removed because of failure -&gt;
+        // return null to signal WeakCache.get() to retry
+        // the loop
+        return null;
+    }
+    // else still us (supplier == this)
+
+    // create new value
+    V value = null;
+    try {
+        value = Objects.requireNonNull(valueFactory.apply(key, parameter));
+    } finally {
+        if (value == null) { // remove us on failure
+            valuesMap.remove(subKey, this);
+        }
+    }
+    // the only path to reach here is with non-null value
+    assert value != null;
+
+    // wrap value with CacheValue (WeakReference)
+    CacheValue&lt;V&gt; cacheValue = new CacheValue&lt;&gt;(value);
+
+    // try replacing us with CacheValue (this should always succeed)
+    if (valuesMap.replace(subKey, this, cacheValue)) {
+        // put also in reverseMap
+        reverseMap.put(cacheValue, Boolean.TRUE);
+    } else {
+        throw new AssertionError(&quot;Should not reach here&quot;);
+    }
+
+    // successfully replaced us with new CacheValue -&gt; return the value
+    // wrapped by it
+    return value;
+}</code></pre>
+<p>第4行代码<code>Supplier&lt;V&gt; supplier = valuesMap.get(subKey)</code>通过subKey获取方才的supplier也就是factory。然后在第18行调用了valueFactory.apply方法创建动态代理类并将结果赋值给变量value。 valueFactory是初始化WeakCache对象调用构造方法时传入的参数 即Prxoy的内部类ProxyClassFactory对象。</p>
+</li>
+</ul>
+</li>
+<li><p>ProxyClassFactory类</p>
+<p>进入apply方法</p>
+<pre><code class="java">public Class&lt;?&gt; apply(ClassLoader loader, Class&lt;?&gt;[] interfaces) {
+
+    Map&lt;Class&lt;?&gt;, Boolean&gt; interfaceSet = new IdentityHashMap&lt;&gt;(interfaces.length);
+    for (Class&lt;?&gt; intf : interfaces) {
+        /*
+                 * Verify that the class loader resolves the name of this
+                 * interface to the same Class object.
+                 */
+        Class&lt;?&gt; interfaceClass = null;
+        try {
+            interfaceClass = Class.forName(intf.getName(), false, loader);
+        } catch (ClassNotFoundException e) {
+        }
+        if (interfaceClass != intf) {
+            throw new IllegalArgumentException(
+                intf + &quot; is not visible from class loader&quot;);
+        }
+        /*
+                 * Verify that the Class object actually represents an
+                 * interface.
+                 */
+        if (!interfaceClass.isInterface()) {
+            throw new IllegalArgumentException(
+                interfaceClass.getName() + &quot; is not an interface&quot;);
+        }
+        /*
+                 * Verify that this interface is not a duplicate.
+                 */
+        if (interfaceSet.put(interfaceClass, Boolean.TRUE) != null) {
+            throw new IllegalArgumentException(
+                &quot;repeated interface: &quot; + interfaceClass.getName());
+        }
+    }
+
+    String proxyPkg = null;     // package to define proxy class in
+    int accessFlags = Modifier.PUBLIC | Modifier.FINAL;
+
+    /*
+             * Record the package of a non-public proxy interface so that the
+             * proxy class will be defined in the same package.  Verify that
+             * all non-public proxy interfaces are in the same package.
+             */
+    for (Class&lt;?&gt; intf : interfaces) {
+        int flags = intf.getModifiers();
+        if (!Modifier.isPublic(flags)) {
+            accessFlags = Modifier.FINAL;
+            String name = intf.getName();
+            int n = name.lastIndexOf(&#39;.&#39;);
+            String pkg = ((n == -1) ? &quot;&quot; : name.substring(0, n + 1));
+            if (proxyPkg == null) {
+                proxyPkg = pkg;
+            } else if (!pkg.equals(proxyPkg)) {
+                throw new IllegalArgumentException(
+                    &quot;non-public interfaces from different packages&quot;);
+            }
+        }
+    }
+
+    if (proxyPkg == null) {
+        // if no non-public proxy interfaces, use com.sun.proxy package
+        proxyPkg = ReflectUtil.PROXY_PACKAGE + &quot;.&quot;;
+    }
+
+    /*
+             * Choose a name for the proxy class to generate.
+             */
+    long num = nextUniqueNumber.getAndIncrement();
+    String proxyName = proxyPkg + proxyClassNamePrefix + num;
+
+    /*
+             * Generate the specified proxy class.
+             */
+    byte[] proxyClassFile = ProxyGenerator.generateProxyClass(
+        proxyName, interfaces, accessFlags);
+    try {
+        return defineClass0(loader, proxyName,
+                            proxyClassFile, 0, proxyClassFile.length);
+    } catch (ClassFormatError e) {
+        /*
+                 * A ClassFormatError here means that (barring bugs in the
+                 * proxy class generation code) there was some other
+                 * invalid aspect of the arguments supplied to the proxy
+                 * class creation (such as virtual machine limitations
+                 * exceeded).
+                 */
+        throw new IllegalArgumentException(e.toString());
+    }
+}</code></pre>
+<p>该方法前边包括一些校验、计算出访问标志和包名、代理类定名 ，然后在73行创建代理类的字节码文件，并defineClass0将字节码文件加载到虚拟机和返回代理类的Class实例。</p>
+</li>
+</ul>
+<p>如上就是第一次创建代理类的大致流程。</p>
+<p>参考文献： <a href="https://www.jianshu.com/p/1a76e516aa53" target="_blank" rel="noopener">JDK动态代理</a>  </p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/11/06/JDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">https://jiaokun.github.io/2019/11/06/JDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2019/10/24/Volatile%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">Volatile实现原理</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

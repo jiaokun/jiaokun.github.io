@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>mybatis.xml的一些配置项 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">mybatis.xml的一些配置项</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">一月 7, 2019&nbsp;&nbsp;15:19:18</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/ssm/">ssm</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="加载外部资源文件"><a href="#加载外部资源文件" class="headerlink" title="加载外部资源文件"></a>加载外部资源文件</h1><pre><code class="xml">&lt;properties resource=&quot;db.properties&quot;&gt;&lt;/properties&gt;</code></pre>
+<h1 id="起别名"><a href="#起别名" class="headerlink" title="起别名"></a>起别名</h1><pre><code class="xml">    &lt;typeAliases&gt;
+        &lt;!--
+            起别名第一种方式
+            type:给哪个类起别名 alias：别名
+        --&gt;
+        &lt;!--&lt;typeAlias type=&quot;com.me.pojo.Users&quot; alias=&quot;user&quot;&gt;&lt;/typeAlias&gt;--&gt;
+
+        &lt;!--
+            起别名第二种方式：批量起别名
+            name：包,起的别名就是类名的全名，首字母大写、小写皆可
+        --&gt;
+        &lt;package name=&quot;com.me.pojo&quot; /&gt;
+    &lt;/typeAliases&gt;</code></pre>
+<h1 id="SqlSessionFactory和SqlSession"><a href="#SqlSessionFactory和SqlSession" class="headerlink" title="SqlSessionFactory和SqlSession"></a>SqlSessionFactory和SqlSession</h1><pre><code class="java">    //获取全局配置文件
+    InputStream in= Resources.getResourceAsStream(&quot;mybatis.xml&quot;);
+    //获取SqlSessionFactory
+    sqlSessionFactory=new SqlSessionFactoryBuilder().build(in);
+    //获取sqlSession
+    qlSession sqlSession=sqlSessionFactory.openSession();
+    //执行sql</code></pre>
+<p>SqlSessionFactory：它是通过全局配置文件获取的，SqlSessionFactoryBuilder创建的。一旦它被创建，就会在程序的执行期一直存在，因此只需要一个实例。也就是说希望它是单例的。 SqlSession：作用是操作数据库，是线程不安全的。因而希望每个线程都有自己的sqlSession的实例。</p>
+<h2 id="工具类"><a href="#工具类" class="headerlink" title="工具类"></a>工具类</h2><pre><code class="java">package com.me.utils;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+public class MybatisUtils {
+    private static SqlSessionFactory sqlSessionFactory;
+
+    static{
+        try {
+            //获取全局配置文件
+            InputStream in= Resources.getResourceAsStream(&quot;mybatis.xml&quot;);
+            //获取SqlSessionFactory
+            sqlSessionFactory=new SqlSessionFactoryBuilder().build(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static SqlSessionFactory getSqlSessionFactory(){
+        return sqlSessionFactory;
+    }
+}</code></pre>
+<h2 id="测试类"><a href="#测试类" class="headerlink" title="测试类"></a>测试类</h2><pre><code class="java">    @Test
+    public void selectById() throws IOException {
+        //获取sqlSession
+        SqlSession sqlSession= MybatisUtils.getSqlSessionFactory().openSession();
+        //执行sql
+        Users user=sqlSession.selectOne(&quot;UsersMapper.selectById&quot;,1);
+        System.err.println(user.getUsername());
+        sqlSession.close();
+    }</code></pre>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/01/07/mybatis.xml%E7%9A%84%E4%B8%80%E4%BA%9B%E9%85%8D%E7%BD%AE%E9%A1%B9/">https://jiaokun.github.io/2019/01/07/mybatis.xml%E7%9A%84%E4%B8%80%E4%BA%9B%E9%85%8D%E7%BD%AE%E9%A1%B9/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/ssm/"># ssm</a>
+                    
+                        <a href="/tags/mybatis/"># mybatis</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/01/07/mapper%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8C%E4%BC%A0%E9%80%92%E5%A4%9A%E5%8F%82%E6%95%B0/">mapper动态代理和传递多参数</a>
+            
+            
+            <a class="next" rel="next" href="/2019/01/07/mybatis%E5%AF%B9%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">mybatis对数据库的常用操作</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

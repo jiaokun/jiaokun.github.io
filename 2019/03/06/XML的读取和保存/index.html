@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="贝壳">
+
+
+    <meta name="subtitle" content="我是贝壳呀">
+
+
+
+
+<title>XML的读取和保存 | Kimshell</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Kimshell&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Kimshell&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">XML的读取和保存</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">贝壳</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">三月 6, 2019&nbsp;&nbsp;9:03:52</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="1-读取"><a href="#1-读取" class="headerlink" title="1. 读取"></a>1. 读取</h1><h2 id="1-1-数据库数据示例"><a href="#1-1-数据库数据示例" class="headerlink" title="1.1 数据库数据示例"></a>1.1 数据库数据示例</h2><pre><code>&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;GB2312&amp;quot;?&amp;gt;
+&amp;lt;report name=&amp;quot;su&amp;quot; pagetype=&amp;quot;A4&amp;quot; width=&amp;quot;210&amp;quot; height=&amp;quot;297&amp;quot; orientation=&amp;quot;1&amp;quot; top=&amp;quot;21&amp;quot; bottom=&amp;quot;21&amp;quot; left=&amp;quot;25&amp;quot; right=&amp;quot;25&amp;quot;&amp;gt;
+  &amp;lt;title title_content=&amp;quot;&amp;quot; fontface=&amp;quot;仿宋体&amp;quot; fontsize=&amp;quot;14&amp;quot; fontbold=&amp;quot;#fb[1]&amp;quot; fontitalic=&amp;quot;#fi[1]&amp;quot; underline=&amp;quot;&amp;quot; dline=&amp;quot;&amp;quot; color=&amp;quot;#000000&amp;quot; /&amp;gt;
+  &amp;lt;head left=&amp;quot;&amp;amp;[制作人]&amp;amp;[YYYY年YY月]&amp;quot; center=&amp;quot;&amp;amp;[制作人]&amp;quot; right=&amp;quot;&amp;amp;[日期]&amp;quot; fontface=&amp;quot;仿宋体&amp;quot; fontsize=&amp;quot;10&amp;quot; fontbold=&amp;quot;#fb[1]&amp;quot; fontitalic=&amp;quot;#fi[1]&amp;quot; underline=&amp;quot;#fu[1]&amp;quot; dline=&amp;quot;&amp;quot; color=&amp;quot;#000000&amp;quot; lHeadHomeShow=&amp;quot;&amp;quot; mHeadHomeShow=&amp;quot;&amp;quot; rHeadHomeShow=&amp;quot;&amp;quot; /&amp;gt;
+  &amp;lt;tail left=&amp;quot;&amp;amp;[时间]&amp;quot; center=&amp;quot;&amp;amp;[总人数]&amp;quot; right=&amp;quot;&amp;amp;[制作人]&amp;quot; fontface=&amp;quot;仿宋体&amp;quot; fontsize=&amp;quot;10&amp;quot; fontbold=&amp;quot;#fb[1]&amp;quot; underline=&amp;quot;&amp;quot; fontitalic=&amp;quot;&amp;quot; dline=&amp;quot;&amp;quot; color=&amp;quot;#000000&amp;quot; lFootHomeShow=&amp;quot;&amp;quot; mFootHomeShow=&amp;quot;mFootChecked&amp;quot; rFootHomeShow=&amp;quot;&amp;quot; /&amp;gt;
+  &amp;lt;body fontface=&amp;quot;仿宋体&amp;quot; fontsize=&amp;quot;10&amp;quot; fontbold=&amp;quot;#fb[1]&amp;quot; fontitalic=&amp;quot;&amp;quot; underline=&amp;quot;&amp;quot; color=&amp;quot;#000000&amp;quot; thead_fn=&amp;quot;仿宋体&amp;quot; thead_fz=&amp;quot;10&amp;quot; thead_fb=&amp;quot;&amp;quot; thead_fu=&amp;quot;&amp;quot; thead_fi=&amp;quot;&amp;quot; thead_fc=&amp;quot;#000000&amp;quot; /&amp;gt;
+&amp;lt;/report&amp;gt;</code></pre><h2 id="1-2-读取和转换"><a href="#1-2-读取和转换" class="headerlink" title="1.2 读取和转换"></a>1.2 读取和转换</h2><pre><code>String sql = &amp;quot;select xml_style from LName where Tabid=?&amp;quot;;
+ArrayList&amp;lt;String&amp;gt; values = new ArrayList&amp;lt;String&amp;gt;();
+values.add(tabid);
+rs = dao.search(sql,values);
+while(rs.next())
+{
+    xml = Sql_switcher.readMemo(rs,&amp;quot;xml_style&amp;quot;);
+}
+if(xml==null||xml.equals(&amp;quot;&amp;quot;))
+{
+    xml = &amp;quot;&amp;lt;?xml version=\&amp;quot;1.0\&amp;quot; encoding=\&amp;quot;GB2312\&amp;quot;?&amp;gt;  &amp;lt;report&amp;gt; &amp;lt;/report&amp;gt;  &amp;quot;;
+}
+byte bt[]=xml.getBytes();
+ByteArrayInputStream input=new ByteArrayInputStream(bt);
+SAXBuilder saxbuilder = new SAXBuilder();
+doc = saxbuilder.build(input);</code></pre><p>先将数据转换为byte格式，再转为字节数组输入流对象input。</p>
+<ul>
+<li><p>读取根节点</p>
+<pre><code>Element element =doc.getRootElement();</code></pre></li>
+<li><p>获取子节点</p>
+<pre><code>element.getChild(&amp;quot;title&amp;quot;);</code></pre></li>
+<li><p>获取节点内元素</p>
+<pre><code>title.getAttributeValue(&amp;quot;title_content&amp;quot;);</code></pre></li>
+</ul>
+<h1 id="2-存储"><a href="#2-存储" class="headerlink" title="2. 存储"></a>2. 存储</h1><h2 id="2-1-转换为DOM类型"><a href="#2-1-转换为DOM类型" class="headerlink" title="2.1 转换为DOM类型"></a>2.1 转换为DOM类型</h2><pre><code>String xml = &amp;quot;&amp;lt;?xml version=\&amp;quot;1.0\&amp;quot; encoding=\&amp;quot;GB2312\&amp;quot;?&amp;gt; &amp;lt;report&amp;gt;&amp;lt;/report&amp;gt;&amp;quot;;
+byte bt[]=xml.getBytes();
+ByteArrayInputStream input=new ByteArrayInputStream(bt);
+SAXBuilder saxbuilder = new SAXBuilder();
+Document doc = saxbuilder.build(input);
+Element report = doc.getRootElement();
+report.setAttribute(&amp;quot;name&amp;quot;,userView==null?&amp;quot;&amp;quot;:userView.getUserName());</code></pre><h2 id="2-2-添加子节点"><a href="#2-2-添加子节点" class="headerlink" title="2.2 添加子节点"></a>2.2 添加子节点</h2><pre><code>Element title = new Element(&amp;quot;title&amp;quot;);
+report.addContent(title);</code></pre><h2 id="2-3DOM转为String"><a href="#2-3DOM转为String" class="headerlink" title="2.3DOM转为String"></a>2.3DOM转为String</h2><pre><code>XMLOutputter outputter = new XMLOutputter();
+Format format=Format.getPrettyFormat();
+format.setEncoding(&amp;quot;GB2312&amp;quot;);
+outputter.setFormat(format);
+String newXML=outputter.outputString(doc);</code></pre>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>贝壳</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="https://jiaokun.github.io/2019/03/06/XML%E7%9A%84%E8%AF%BB%E5%8F%96%E5%92%8C%E4%BF%9D%E5%AD%98/">https://jiaokun.github.io/2019/03/06/XML%E7%9A%84%E8%AF%BB%E5%8F%96%E5%92%8C%E4%BF%9D%E5%AD%98/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2019/03/11/%E4%BA%8C%E5%88%86%E6%90%9C%E7%B4%A2%E6%A0%91/">二分搜索树</a>
+            
+            
+            <a class="next" rel="next" href="/2019/03/03/%E9%93%BE%E8%A1%A8/">链表</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 贝壳 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
